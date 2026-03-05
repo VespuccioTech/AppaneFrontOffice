@@ -1,23 +1,23 @@
 <?php
 require_once("config.php");
-
 $errore = '';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST['username']);
     $email = trim($_POST['email']);
-    $password = $_POST['password']; 
-    $nome_cognome = trim($_POST['nome_cognome']);
+    $password = $_POST['password'];
+    $nome = trim($_POST['nome']);
+    $cognome = trim($_POST['cognome']);
     $telefono = trim($_POST['telefono']);
 
     try {
         $pdo->beginTransaction();
-        
         $stmt_acc = $pdo->prepare("INSERT INTO account (username, password) VALUES (?, ?)");
         $stmt_acc->execute([$username, $password]);
-        
-        // FIX: Se l'email esiste già, la aggiorna e prosegue senza andare in crash!
-        $stmt_cli = $pdo->prepare("INSERT INTO cliente (email, n_telefono, nome_cognome) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE n_telefono = VALUES(n_telefono), nome_cognome = VALUES(nome_cognome)");
-        $stmt_cli->execute([$email, $telefono, $nome_cognome]);
+
+        // Inserimento con i nuovi campi separati
+        $stmt_cli = $pdo->prepare("INSERT INTO cliente (email, n_telefono, nome, cognome) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE n_telefono = VALUES(n_telefono), nome = VALUES(nome), cognome = VALUES(cognome)");
+        $stmt_cli->execute([$email, $telefono, $nome, $cognome]);
 
         $stmt_reg = $pdo->prepare("INSERT INTO registrazione (email_cliente, username_account, data) VALUES (?, ?, CURDATE())");
         $stmt_reg->execute([$email, $username]);
@@ -49,14 +49,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?php if($errore) echo "<div class='alert alert-error'>$errore</div>"; ?>
             <form method="POST">
                 <div class="form-row">
+                    <div class="form-col"><label class="form-label">Nome</label><input type="text" name="nome" class="form-control" required></div>
+                    <div class="form-col"><label class="form-label">Cognome</label><input type="text" name="cognome" class="form-control" required></div>
+                </div>
+                <div class="form-row">
                     <div class="form-col"><label class="form-label">Username</label><input type="text" name="username" class="form-control" required></div>
-                    <div class="form-col"><label class="form-label">Nome e Cognome</label><input type="text" name="nome_cognome" class="form-control" required></div>
-                </div>
-                <div class="form-row">
                     <div class="form-col"><label class="form-label">Email</label><input type="email" name="email" class="form-control" required></div>
-                    <div class="form-col"><label class="form-label">Telefono</label><input type="text" name="telefono" class="form-control"></div>
                 </div>
                 <div class="form-row">
+                    <div class="form-col"><label class="form-label">Telefono</label><input type="text" name="telefono" class="form-control"></div>
                     <div class="form-col"><label class="form-label">Password</label><input type="password" name="password" class="form-control" required></div>
                 </div>
                 <button type="submit" class="btn btn-purple" style="width: 100%;">Registrati</button>

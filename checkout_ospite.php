@@ -17,9 +17,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt_acc = $pdo->prepare("INSERT INTO account (username, password) VALUES (?, ?)");
         $stmt_acc->execute([$guest_username, 'guest_pass_123']);
         
-        // Sostituisci la query $stmt_cli esistente (attorno alla riga 17 del file checkout_ospite.php originale) con questa:
-        $stmt_cli = $pdo->prepare("INSERT INTO cliente (email, n_telefono, nome_cognome) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE n_telefono = VALUES(n_telefono), nome_cognome = VALUES(nome_cognome)");
-        $stmt_cli->execute([$email, $_POST['telefono'], $_POST['nome'] . ' ' . $_POST['cognome']]);
+        // Inserimento o aggiornamento cliente con campi 'nome' e 'cognome' separati
+        $stmt_cli = $pdo->prepare("INSERT INTO cliente (email, n_telefono, nome, cognome) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE n_telefono = VALUES(n_telefono), nome = VALUES(nome), cognome = VALUES(cognome)");
+        $stmt_cli->execute([$email, trim($_POST['telefono']), trim($_POST['nome']), trim($_POST['cognome'])]);
         
         // Registrazione ombra
         $stmt_reg = $pdo->prepare("INSERT INTO registrazione (email_cliente, username_account, data) VALUES (?, ?, CURDATE())");
