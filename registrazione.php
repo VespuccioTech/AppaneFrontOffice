@@ -5,24 +5,26 @@ $errore = '';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST['username']);
     $email = trim($_POST['email']);
-    $password = $_POST['password']; // Password in chiaro
+    $password = $_POST['password']; 
     $nome_cognome = trim($_POST['nome_cognome']);
     $telefono = trim($_POST['telefono']);
+
     try {
         $pdo->beginTransaction();
         
         $stmt_acc = $pdo->prepare("INSERT INTO account (username, password) VALUES (?, ?)");
         $stmt_acc->execute([$username, $password]);
         
-        $stmt_cli = $pdo->prepare("INSERT INTO cliente (email, n_telefono, nome_cognome) VALUES (?, ?, ?)");
+        // FIX: Se l'email esiste già, la aggiorna e prosegue senza andare in crash!
+        $stmt_cli = $pdo->prepare("INSERT INTO cliente (email, n_telefono, nome_cognome) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE n_telefono = VALUES(n_telefono), nome_cognome = VALUES(nome_cognome)");
         $stmt_cli->execute([$email, $telefono, $nome_cognome]);
-        
+
         $stmt_reg = $pdo->prepare("INSERT INTO registrazione (email_cliente, username_account, data) VALUES (?, ?, CURDATE())");
         $stmt_reg->execute([$email, $username]);
 
         $pdo->commit();
         $_SESSION['utente_loggato'] = $username;
-        
+
         if (isset($_GET['checkout'])) {
             header("Location: checkout_utente.php");
         } else {
@@ -31,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     } catch (\PDOException $e) {
         $pdo->rollBack();
-        $errore = "Errore durante la registrazione. Forse l'username o l'email esistono già?";
+        $errore = "Errore durante la registrazione. Forse l'username esiste già?";
     }
 }
 ?>
