@@ -1,0 +1,66 @@
+<?php
+require_once("config.php");
+
+$errore = '';
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
+    $password = $_POST['password']; // Password in chiaro
+    $nome_cognome = trim($_POST['nome_cognome']);
+    $telefono = trim($_POST['telefono']);
+    try {
+        $pdo->beginTransaction();
+        
+        $stmt_acc = $pdo->prepare("INSERT INTO account (username, password) VALUES (?, ?)");
+        $stmt_acc->execute([$username, $password]);
+        
+        $stmt_cli = $pdo->prepare("INSERT INTO cliente (email, n_telefono, nome_cognome) VALUES (?, ?, ?)");
+        $stmt_cli->execute([$email, $telefono, $nome_cognome]);
+        
+        $stmt_reg = $pdo->prepare("INSERT INTO registrazione (email_cliente, username_account, data) VALUES (?, ?, CURDATE())");
+        $stmt_reg->execute([$email, $username]);
+
+        $pdo->commit();
+        $_SESSION['utente_loggato'] = $username;
+        
+        if (isset($_GET['checkout'])) {
+            header("Location: checkout_utente.php");
+        } else {
+            header("Location: index.php");
+        }
+        exit;
+    } catch (\PDOException $e) {
+        $pdo->rollBack();
+        $errore = "Errore durante la registrazione. Forse l'username o l'email esistono già?";
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="it">
+<head><meta charset="UTF-8"><title>Registrazione - Appane</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<div class="dashboard-wrapper">
+    <header class="main-header"><a href="index.php" class="logo-link"><h1 style="color:white; margin:0;">APPANE</h1></a></header>
+    <main class="content-area" style="display:flex; justify-content:center; align-items:center;">
+        <div class="form-container" style="width: 600px;">
+            <h2 style="color: #8B4513; text-align:center; margin-bottom: 20px;">REGISTRAZIONE</h2>
+            <?php if($errore) echo "<div class='alert alert-error'>$errore</div>"; ?>
+            <form method="POST">
+                <div class="form-row">
+                    <div class="form-col"><label class="form-label">Username</label><input type="text" name="username" class="form-control" required></div>
+                    <div class="form-col"><label class="form-label">Nome e Cognome</label><input type="text" name="nome_cognome" class="form-control" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col"><label class="form-label">Email</label><input type="email" name="email" class="form-control" required></div>
+                    <div class="form-col"><label class="form-label">Telefono</label><input type="text" name="telefono" class="form-control"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col"><label class="form-label">Password</label><input type="password" name="password" class="form-control" required></div>
+                </div>
+                <button type="submit" class="btn btn-purple" style="width: 100%;">Registrati</button>
+            </form>
+        </div>
+    </main>
+</div>
+</body>
+</html>

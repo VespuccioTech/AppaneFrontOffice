@@ -1,0 +1,121 @@
+/* --- RESET E BASI --- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+    font-family: 'Lato', sans-serif; 
+    background-color: #FFF7ED; /* Crema chiarissimo */
+    color: #4A2C2A; 
+    line-height: 1.6;
+}
+
+/* --- HEADER --- */
+.main-header { 
+    background: #8B4513; /* Marrone sella */
+    color: white; 
+    padding: 1rem 2rem; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.logo-link { text-decoration: none; color: white; display: flex; align-items: center; }
+.logo-link img { height: 60px; border-radius: 8px; margin-right: 15px; }
+
+/* --- LAYOUT --- */
+.dashboard-wrapper { display: flex; flex-direction: column; min-height: 100vh; }
+.content-area { padding: 40px 20px; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+/* --- CARDS PRODOTTI (Front-office) --- */
+.grid-layout { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+    gap: 25px; 
+    margin-top: 20px;
+}
+.card { 
+    background: white; 
+    border: 1px solid #D4A373; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    display: flex; 
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(139, 69, 19, 0.1); }
+.card-header { 
+    background: #FDF2F2; 
+    padding: 15px; 
+    font-weight: bold; 
+    font-size: 1.1rem; 
+    color: #8B4513;
+    border-bottom: 1px solid #D4A373;
+}
+
+/* --- BOTTONI --- */
+.btn { 
+    padding: 12px 24px; 
+    border-radius: 8px; 
+    text-decoration: none; 
+    display: inline-block; 
+    font-weight: bold; 
+    cursor: pointer; 
+    border: none; 
+    transition: opacity 0.3s;
+    text-align: center;
+}
+.btn:hover { opacity: 0.9; }
+.btn-purple { background: #5E3A8C; color: white; } /* Per azioni principali/login */
+.btn-bread { background: #D4A373; color: white; }  /* Per carrello/conferma */
+
+/* --- FORM E CHECKOUT --- */
+.form-container { 
+    background: white; 
+    border: 2px solid #D4A373; 
+    border-radius: 15px; 
+    padding: 40px; 
+    max-width: 700px; 
+    margin: 20px auto; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+}
+.form-label { display: block; margin-bottom: 8px; font-weight: bold; color: #8B4513; }
+.form-control { 
+    width: 100%; 
+    padding: 12px; 
+    margin-bottom: 20px; 
+    border: 1px solid #D4A373; 
+    border-radius: 6px; 
+    font-size: 1rem;
+}
+.form-row { display: flex; gap: 20px; }
+.form-col { flex: 1; }
+
+/* --- CARRELLO --- */
+.cart-summary { 
+    background: #FFFAF4; 
+    border: 2px dashed #D4A373; 
+    padding: 20px; 
+    border-radius: 10px; 
+    margin-top: 30px; 
+}
+.cart-item { 
+    display: flex; 
+    justify-content: space-between; 
+    padding: 10px 0; 
+    border-bottom: 1px solid #EEE; 
+}
+
+/* --- AVVISI --- */
+.alert { 
+    padding: 15px; 
+    border-radius: 8px; 
+    margin-bottom: 25px; 
+    text-align: center; 
+    font-weight: bold;
+}
+.alert-success { background: #D1FAE5; color: #065F46; border: 1px solid #10B981; }
+.alert-error { background: #FEE2E2; color: #991B1B; border: 1px solid #F87171; }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 600px) {
+    .form-row { flex-direction: column; gap: 0; }
+    .main-header { flex-direction: column; text-align: center; gap: 10px; }
+}
