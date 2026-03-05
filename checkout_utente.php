@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $id_menu = $menu_attivo['id_menu'];
 
         // 4. Inserimento Ordine
-        $stmt_ord = $pdo->prepare("INSERT INTO ordine (importo, data, consegna_effettuata, id_indirizzo, username_account, id_menu) VALUES (?, NOW(), 0, ?, ?, ?)");
+        $stmt_ord = $pdo->prepare("INSERT INTO ordine (importo, data, stato, id_indirizzo, username_account, id_menu) VALUES (?, NOW(), 'In attesa', ?, ?, ?)");
         $stmt_ord->execute([$importo_totale, $id_indirizzo, $username, $id_menu]);
         $id_ordine = $pdo->lastInsertId();
 
