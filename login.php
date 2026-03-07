@@ -5,7 +5,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    $stmt = $pdo->prepare("SELECT * FROM account WHERE username = ?");
+    $stmt = $pdo->prepare("SELECT * FROM taccount WHERE username = ?");
     $stmt->execute([$username]);
     $account = $stmt->fetch();
     

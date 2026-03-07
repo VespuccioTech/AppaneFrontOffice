@@ -14,19 +14,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $pdo->beginTransaction();
         
         // Creazione account ombra
-        $stmt_acc = $pdo->prepare("INSERT INTO account (username, password) VALUES (?, ?)");
+        $stmt_acc = $pdo->prepare("INSERT INTO taccount (username, password) VALUES (?, ?)");
         $stmt_acc->execute([$guest_username, 'guest_pass_123']);
         
         // Inserimento o aggiornamento cliente con campi 'nome' e 'cognome' separati
-        $stmt_cli = $pdo->prepare("INSERT INTO cliente (email, n_telefono, nome, cognome) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE n_telefono = VALUES(n_telefono), nome = VALUES(nome), cognome = VALUES(cognome)");
+        $stmt_cli = $pdo->prepare("INSERT INTO tcliente (email, n_telefono, nome, cognome) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE n_telefono = VALUES(n_telefono), nome = VALUES(nome), cognome = VALUES(cognome)");
         $stmt_cli->execute([$email, trim($_POST['telefono']), trim($_POST['nome']), trim($_POST['cognome'])]);
         
         // Registrazione ombra
-        $stmt_reg = $pdo->prepare("INSERT INTO registrazione (email_cliente, username_account, data) VALUES (?, ?, CURDATE())");
+        $stmt_reg = $pdo->prepare("INSERT INTO tregistrazione (email_cliente, username_account, data) VALUES (?, ?, CURDATE())");
         $stmt_reg->execute([$email, $guest_username]);
 
         // Inserimento Indirizzo
-        $stmt_ind = $pdo->prepare("INSERT INTO indirizzo_di_consegna (n_civico, cap, via, citta, username_account) VALUES (?, ?, ?, ?, ?)");
+        $stmt_ind = $pdo->prepare("INSERT INTO tindirizzo_di_consegna (n_civico, cap, via, citta, username_account) VALUES (?, ?, ?, ?, ?)");
         $stmt_ind->execute([$_POST['civico'], $_POST['cap'], $_POST['via'], $_POST['citta'], $guest_username]);
         $id_indirizzo = $pdo->lastInsertId();
 
@@ -37,18 +37,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Recupero Menù Attivo
-        $stmt_menu = $pdo->query("SELECT id_menu FROM menu_settimanale ORDER BY id_menu DESC LIMIT 1");
+        $stmt_menu = $pdo->query("SELECT id_menu FROM tmenu_settimanale ORDER BY id_menu DESC LIMIT 1");
         $menu_attivo = $stmt_menu->fetch();
         if (!$menu_attivo) throw new \Exception("Nessun menù settimanale attivo al momento.");
         $id_menu = $menu_attivo['id_menu'];
 
         // Inserimento Ordine
-        $stmt_ord = $pdo->prepare("INSERT INTO ordine (importo, data, stato, id_indirizzo, username_account, id_menu) VALUES (?, NOW(), 'In attesa', ?, ?, ?)");
+        $stmt_ord = $pdo->prepare("INSERT INTO tordine (importo, data, stato, id_indirizzo, username_account, id_menu) VALUES (?, NOW(), 'In attesa', ?, ?, ?)");
         $stmt_ord->execute([$importo_totale, $id_indirizzo, $guest_username, $id_menu]);
         $id_ordine = $pdo->lastInsertId();
 
         // Inserimento Prodotti Selezionati
-        $stmt_sel = $pdo->prepare("INSERT INTO selezione (id_ordine, nome_prodotto, id_menu, quantita) VALUES (?, ?, ?, ?)");
+        $stmt_sel = $pdo->prepare("INSERT INTO tselezione (id_ordine, nome_prodotto, id_menu, quantita) VALUES (?, ?, ?, ?)");
         foreach ($_SESSION['carrello'] as $nome_prod => $dati) {
             $stmt_sel->execute([$id_ordine, $nome_prod, $id_menu, $dati['quantita']]);
         }

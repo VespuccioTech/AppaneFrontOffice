@@ -12,14 +12,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         $pdo->beginTransaction();
-        $stmt_acc = $pdo->prepare("INSERT INTO account (username, password) VALUES (?, ?)");
+        $stmt_acc = $pdo->prepare("INSERT INTO taccount (username, password) VALUES (?, ?)");
         $stmt_acc->execute([$username, $password]);
 
         // Inserimento con i nuovi campi separati
-        $stmt_cli = $pdo->prepare("INSERT INTO cliente (email, n_telefono, nome, cognome) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE n_telefono = VALUES(n_telefono), nome = VALUES(nome), cognome = VALUES(cognome)");
+        $stmt_cli = $pdo->prepare("INSERT INTO tcliente (email, n_telefono, nome, cognome) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE n_telefono = VALUES(n_telefono), nome = VALUES(nome), cognome = VALUES(cognome)");
         $stmt_cli->execute([$email, $telefono, $nome, $cognome]);
 
-        $stmt_reg = $pdo->prepare("INSERT INTO registrazione (email_cliente, username_account, data) VALUES (?, ?, CURDATE())");
+        $stmt_reg = $pdo->prepare("INSERT INTO tregistrazione (email_cliente, username_account, data) VALUES (?, ?, CURDATE())");
         $stmt_reg->execute([$email, $username]);
 
         $pdo->commit();

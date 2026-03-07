@@ -4,16 +4,16 @@ require_once("config.php");
 if (!isset($_GET['nome'])) { header('Location: index.php'); exit; }
 $nome_prodotto = $_GET['nome'];
 
-$stmt = $pdo->prepare("SELECT * FROM prodotto WHERE nome = ?");
+$stmt = $pdo->prepare("SELECT * FROM tprodotto WHERE nome = ?");
 $stmt->execute([$nome_prodotto]);
 $prodotto = $stmt->fetch();
 
-$stmt_ing = $pdo->prepare("SELECT nome_ingrediente FROM composizione WHERE nome_prodotto = ?");
+$stmt_ing = $pdo->prepare("SELECT nome_ingrediente FROM tcomposizione WHERE nome_prodotto = ?");
 $stmt_ing->execute([$nome_prodotto]);
 $ingredienti = $stmt_ing->fetchAll(PDO::FETCH_COLUMN);
 
 // Estrai l'immagine principale
-$stmt_img = $pdo->prepare("SELECT percorso_file FROM immagine_prodotto WHERE nome_prodotto = ? LIMIT 1");
+$stmt_img = $pdo->prepare("SELECT percorso_file FROM timmagine_prodotto WHERE nome_prodotto = ? LIMIT 1");
 $stmt_img->execute([$nome_prodotto]);
 $immagine = $stmt_img->fetchColumn();
 ?>

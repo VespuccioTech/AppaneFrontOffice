@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $pdo->beginTransaction();
 
         // 1. Inserimento Indirizzo per questo ordine
-        $stmt_ind = $pdo->prepare("INSERT INTO indirizzo_di_consegna (n_civico, cap, via, citta, username_account) VALUES (?, ?, ?, ?, ?)");
+        $stmt_ind = $pdo->prepare("INSERT INTO tindirizzo_di_consegna (n_civico, cap, via, citta, username_account) VALUES (?, ?, ?, ?, ?)");
         $stmt_ind->execute([$_POST['civico'], $_POST['cap'], $_POST['via'], $_POST['citta'], $username]);
         $id_indirizzo = $pdo->lastInsertId();
 
@@ -29,18 +29,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // 3. Recupero Menù Attivo
-        $stmt_menu = $pdo->query("SELECT id_menu FROM menu_settimanale ORDER BY id_menu DESC LIMIT 1");
+        $stmt_menu = $pdo->query("SELECT id_menu FROM tmenu_settimanale ORDER BY id_menu DESC LIMIT 1");
         $menu_attivo = $stmt_menu->fetch();
         if (!$menu_attivo) throw new \Exception("Nessun menù settimanale attivo al momento.");
         $id_menu = $menu_attivo['id_menu'];
 
         // 4. Inserimento Ordine
-        $stmt_ord = $pdo->prepare("INSERT INTO ordine (importo, data, stato, id_indirizzo, username_account, id_menu) VALUES (?, NOW(), 'In attesa', ?, ?, ?)");
+        $stmt_ord = $pdo->prepare("INSERT INTO tordine (importo, data, stato, id_indirizzo, username_account, id_menu) VALUES (?, NOW(), 'In attesa', ?, ?, ?)");
         $stmt_ord->execute([$importo_totale, $id_indirizzo, $username, $id_menu]);
         $id_ordine = $pdo->lastInsertId();
 
         // 5. Inserimento Prodotti Selezionati
-        $stmt_sel = $pdo->prepare("INSERT INTO selezione (id_ordine, nome_prodotto, id_menu, quantita) VALUES (?, ?, ?, ?)");
+        $stmt_sel = $pdo->prepare("INSERT INTO tselezione (id_ordine, nome_prodotto, id_menu, quantita) VALUES (?, ?, ?, ?)");
         foreach ($_SESSION['carrello'] as $nome_prod => $dati) {
             $stmt_sel->execute([$id_ordine, $nome_prod, $id_menu, $dati['quantita']]);
         }

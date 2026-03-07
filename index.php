@@ -31,11 +31,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Estrae SOLO i prodotti del menù attivo, con ingredienti e immagini
 $sql = "SELECT p.*, 
                GROUP_CONCAT(c.nome_ingrediente SEPARATOR ', ') as ingredienti,
-               (SELECT percorso_file FROM immagine_prodotto ip WHERE ip.nome_prodotto = p.nome LIMIT 1) as immagine
-        FROM prodotto p
-        JOIN produzione pr ON p.nome = pr.nome_prodotto
-        LEFT JOIN composizione c ON p.nome = c.nome_prodotto
-        WHERE pr.id_menu = (SELECT id_menu FROM menu_settimanale ORDER BY id_menu DESC LIMIT 1)
+               (SELECT percorso_file FROM timmagine_prodotto ip WHERE ip.nome_prodotto = p.nome LIMIT 1) as immagine
+        FROM tprodotto p
+        JOIN tproduzione pr ON p.nome = pr.nome_prodotto
+        LEFT JOIN tcomposizione c ON p.nome = c.nome_prodotto
+        WHERE pr.id_menu = (SELECT id_menu FROM tmenu_settimanale ORDER BY id_menu DESC LIMIT 1)
         GROUP BY p.nome";
 
 $prodotti = $pdo->query($sql)->fetchAll();
