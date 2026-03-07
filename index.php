@@ -52,6 +52,7 @@ $totale_carrello = array_sum(array_column($_SESSION['carrello'], 'quantita'));
             <?php if(isset($_SESSION['utente_loggato'])): ?>
                 <span style="color: white; font-weight: bold; margin-right: 15px;">
                     Ciao <?php echo htmlspecialchars($_SESSION['utente_loggato']); ?>! 
+                    <a href="i_miei_ordini.php" style="color: #FFFAF4; font-size: 0.95rem; margin-left: 15px; text-decoration: underline;">I Miei Ordini</a>
                     <a href="logout.php" style="color: #E9D5FF; font-size: 0.8rem; margin-left: 10px; text-decoration: none;">(Esci)</a>
                 </span>
             <?php else: ?>
