@@ -102,6 +102,35 @@ $indirizzi = $stmt_miei_indirizzi->fetchAll();
                 }
             }
         }
+
+        function controllaCAP(event) {
+            var radios = document.getElementsByName('id_indirizzo_scelto');
+            var capScelto = '';
+            
+            // Troviamo quale opzione è selezionata
+            for (var i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    if (radios[i].value === 'nuovo') {
+                        // Se è un nuovo indirizzo, prendiamo il valore dalla casella di testo
+                        capScelto = document.querySelector('input[name="cap"]').value.trim();
+                    } else {
+                        // Se è un indirizzo salvato, prendiamo il valore dall'attributo data-cap
+                        capScelto = radios[i].getAttribute('data-cap').trim();
+                    }
+                    break;
+                }
+            }
+
+            // Se il CAP c'è ma non inizia per "34"
+            if (capScelto && !capScelto.startsWith('34')) {
+                var procedi = confirm("ATTENZIONE:\nIl CAP indicato (" + capScelto + ") non inizia con 34.\n\nL'ordine potrebbe non arrivare (potrai monitorarlo dallo stato dell'ordine). Vuoi procedere comunque?");
+                
+                if (!procedi) {
+                    return false; // Se l'utente clicca Annulla, ferma l'invio del form
+                }
+            }
+            return true; // Se il CAP è 34... o l'utente ha cliccato OK, invia il form
+        }
     </script>
 </head>
 <body onload="gestisciFormIndirizzo()">
@@ -117,14 +146,14 @@ $indirizzi = $stmt_miei_indirizzi->fetchAll();
             <?php else: ?>
                 <p style="text-align: center; margin-bottom: 20px;">Bentornato, <strong><?php echo htmlspecialchars($username); ?></strong>! Dove spediamo il tuo pane?</p>
                 
-                <form method="POST">
+                <form method="POST" onsubmit="return controllaCAP(event);">
                     
                     <div style="margin-bottom: 20px;">
                         <?php if (!empty($indirizzi)): ?>
                             <h3 style="color:#5E3A8C; margin-bottom:10px; font-size: 1.1rem;">Scegli un indirizzo salvato:</h3>
                             <?php foreach ($indirizzi as $index => $ind): ?>
                                 <label style="display: block; padding: 10px; border: 1px solid #D4A373; border-radius: 5px; margin-bottom: 10px; background: #FFFAF4; cursor: pointer;">
-                                    <input type="radio" name="id_indirizzo_scelto" value="<?php echo $ind['id_indirizzo']; ?>" onclick="gestisciFormIndirizzo()" <?php echo ($index === 0) ? 'checked' : ''; ?>>
+                                    <input type="radio" name="id_indirizzo_scelto" value="<?php echo $ind['id_indirizzo']; ?>" data-cap="<?php echo htmlspecialchars($ind['cap']); ?>" onclick="gestisciFormIndirizzo()" <?php echo ($index === 0) ? 'checked' : ''; ?>>
                                     <strong style="color: #8B4513;"><?php echo htmlspecialchars($ind['via'] . ', ' . $ind['n_civico']); ?></strong>
                                     - <?php echo htmlspecialchars($ind['cap'] . ' ' . $ind['citta']); ?>
                                 </label>

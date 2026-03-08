@@ -11,6 +11,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             throw new \Exception("Il tuo carrello è vuoto!");
         }
 
+        // --- NUOVO CONTROLLO CAP PER OSPITI ---
+        $cap_inserito = trim($_POST['cap']);
+        if (strpos($cap_inserito, '34') !== 0) {
+            throw new \Exception("Siamo spiacenti, le consegne per gli utenti non registrati sono limitate alle zone con CAP che inizia per 34. Non è possibile procedere con l'ordine.");
+        }
+        // --------------------------------------
+
         $pdo->beginTransaction();
         
         // Creazione account ombra
