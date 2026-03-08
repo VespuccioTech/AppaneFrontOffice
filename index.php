@@ -47,7 +47,7 @@ $totale_carrello = array_sum(array_column($_SESSION['carrello'], 'quantita'));
 <body>
 <div class="dashboard-wrapper">
     <header class="main-header">
-        <a href="index.php" class="logo-link"><h1 style="color:white; margin:0;">APPANE</h1></a>
+        <a href="index.php" class="logo-link"><img src="appane logo.jpg" alt="Logo Appane" style="height: 70px; width: auto;"></a>
         <div class="header-nav-group">
             <?php if(isset($_SESSION['utente_loggato'])): ?>
                 <span style="color: white; font-weight: bold; margin-right: 15px;">

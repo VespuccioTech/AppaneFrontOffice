@@ -23,7 +23,7 @@ $immagine = $stmt_img->fetchColumn();
 <body>
 <div class="dashboard-wrapper">
     <header class="main-header">
-        <a href="index.php" class="logo-link"><h1 style="color:white; margin:0;">APPANE</h1></a>
+        <a href="index.php" class="logo-link"><img src="appane logo.jpg" alt="Logo Appane" style="height: 70px; width: auto;"></a>
     </header>
     <nav class="sub-nav"><div><a href="index.php" style="color: #5E3A8C; font-weight: bold; text-decoration: none;">← Torna al menù</a></div></nav>
     <main class="content-area">

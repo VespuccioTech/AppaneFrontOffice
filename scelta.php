@@ -11,7 +11,7 @@ if (isset($_SESSION['utente_loggato'])) {
 <head><meta charset="UTF-8"><title>Scegli come procedere</title><link rel="stylesheet" href="style.css"></head>
 <body>
 <div class="dashboard-wrapper">
-    <header class="main-header"><a href="index.php" class="logo-link"><h1 style="color:white; margin:0;">APPANE</h1></a></header>
+    <header class="main-header"><a href="index.php" class="logo-link"><img src="appane logo.jpg" alt="Logo Appane" style="height: 70px; width: auto;"></a></header>
     <main class="content-area" style="display:flex; justify-content:center; align-items:center;">
         <div class="form-container" style="text-align: center; width: 600px;">
             <h2 style="color: #8B4513; margin-bottom: 30px;">Come vuoi procedere?</h2>

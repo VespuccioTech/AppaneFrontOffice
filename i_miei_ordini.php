@@ -38,7 +38,7 @@ foreach ($tutti_prodotti as $p) {
 <body>
 <div class="dashboard-wrapper">
     <header class="main-header">
-        <a href="index.php" class="logo-link"><h1 style="color:white; margin:0;">APPANE</h1></a>
+        <a href="index.php" class="logo-link"><img src="appane logo.jpg" alt="Logo Appane" style="height: 70px; width: auto;"></a>
         <div class="nav-title" style="color:white; font-size:1.2rem; font-weight:bold; margin-left:20px;">I MIEI ORDINI</div>
     </header>
     <nav class="sub-nav" style="background: #FFF8E7; padding: 12px 30px; border-bottom: 3px solid #D4A373;">

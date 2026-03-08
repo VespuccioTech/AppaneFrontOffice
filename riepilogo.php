@@ -21,7 +21,7 @@ foreach ($carrello as $item) {
 <body>
 <div class="dashboard-wrapper">
     <header class="main-header">
-        <a href="index.php" class="logo-link"><h1 style="color:white; margin:0;">APPANE</h1></a>
+        <a href="index.php" class="logo-link"><img src="appane logo.jpg" alt="Logo Appane" style="height: 70px; width: auto;"></a>
         <div class="nav-title">RIEPILOGO ORDINE</div>
     </header>
     <nav class="sub-nav">
