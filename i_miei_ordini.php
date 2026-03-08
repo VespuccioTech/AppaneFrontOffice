@@ -10,7 +10,7 @@ if (!isset($_SESSION['utente_loggato'])) {
 $username = $_SESSION['utente_loggato'];
 
 // Recupero gli ordini dell'utente
-$stmt_ordini = $pdo->prepare("SELECT id_ordine, data, importo, stato FROM tordine WHERE username_account = ? ORDER BY data DESC");
+$stmt_ordini = $pdo->prepare("SELECT id_ordine, data, importo, stato, note FROM tordine WHERE username_account = ? ORDER BY data DESC");
 $stmt_ordini->execute([$username]);
 $ordini = $stmt_ordini->fetchAll();
 
@@ -84,6 +84,13 @@ foreach ($tutti_prodotti as $p) {
                                 </tr>
                             <?php endforeach; ?>
                         </table>
+
+                        <?php if (!empty($ordine['note'])): ?>
+                            <div style="margin-top: 15px; padding: 12px 15px; background: #FFF8E7; border-left: 4px solid #F4A261; border-radius: 4px;">
+                                <strong style="color: #8B4513; font-size: 0.9rem;">📝 Messaggio dal fornaio:</strong>
+                                <p style="margin-top: 5px; color: #4A3320; font-size: 0.95rem; white-space: pre-wrap; margin-bottom: 0;"><?php echo htmlspecialchars($ordine['note']); ?></p>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
             <?php endif; ?>
