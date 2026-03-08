@@ -17,10 +17,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $pdo->beginTransaction();
 
-        // 1. Inserimento Indirizzo per questo ordine
-        $stmt_ind = $pdo->prepare("INSERT INTO tindirizzo_di_consegna (n_civico, cap, via, citta, username_account) VALUES (?, ?, ?, ?, ?)");
-        $stmt_ind->execute([$_POST['civico'], $_POST['cap'], $_POST['via'], $_POST['citta'], $username]);
-        $id_indirizzo = $pdo->lastInsertId();
+        // 1. Gestione Indirizzo: Controllo se ha scelto un indirizzo esistente o uno nuovo
+        $id_indirizzo = null;
+        if (isset($_POST['id_indirizzo_scelto']) && $_POST['id_indirizzo_scelto'] !== 'nuovo') {
+            $id_indirizzo = $_POST['id_indirizzo_scelto'];
+            
+            // Verifica di sicurezza (per assicurarci che l'indirizzo sia suo)
+            $check = $pdo->prepare("SELECT id_indirizzo FROM tindirizzo_di_consegna WHERE id_indirizzo = ? AND username_account = ?");
+            $check->execute([$id_indirizzo, $username]);
+            if (!$check->fetch()) throw new \Exception("Indirizzo non valido.");
+        } else {
+            // Se ha scelto "Nuovo Indirizzo", lo inseriamo e lo leghiamo al suo account
+            if(empty($_POST['via']) || empty($_POST['civico']) || empty($_POST['citta']) || empty($_POST['cap'])) {
+                throw new \Exception("Devi compilare tutti i campi del nuovo indirizzo.");
+            }
+            $stmt_ind = $pdo->prepare("INSERT INTO tindirizzo_di_consegna (n_civico, cap, via, citta, username_account, attivo) VALUES (?, ?, ?, ?, ?, 1)");
+            $stmt_ind->execute([trim($_POST['civico']), trim($_POST['cap']), trim($_POST['via']), trim($_POST['citta']), $username]);
+            $id_indirizzo = $pdo->lastInsertId();
+        }
 
         // 2. Calcolo Totale
         $importo_totale = 0;
@@ -57,11 +71,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $messaggio = $e->getMessage();
     }
 }
+
+// Recupero gli indirizzi salvati per mostrarli nel form
+$stmt_miei_indirizzi = $pdo->prepare("SELECT * FROM tindirizzo_di_consegna WHERE username_account = ? AND attivo = 1");
+$stmt_miei_indirizzi->execute([$username]);
+$indirizzi = $stmt_miei_indirizzi->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="it">
-<head><meta charset="UTF-8"><title>Checkout - Appane</title><link rel="stylesheet" href="style.css"></head>
-<body>
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout - Appane</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        // Semplice script per mostrare/nascondere i campi del nuovo indirizzo
+        function gestisciFormIndirizzo() {
+            var radios = document.getElementsByName('id_indirizzo_scelto');
+            var nuovoForm = document.getElementById('form_nuovo_indirizzo');
+            var inputs = nuovoForm.getElementsByTagName('input');
+            
+            for (var i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    if (radios[i].value === 'nuovo') {
+                        nuovoForm.style.display = 'block';
+                        for(var j=0; j<inputs.length; j++) inputs[j].required = true;
+                    } else {
+                        nuovoForm.style.display = 'none';
+                        for(var j=0; j<inputs.length; j++) inputs[j].required = false;
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body onload="gestisciFormIndirizzo()">
 <div class="dashboard-wrapper">
     <header class="main-header"><a href="index.php" class="logo-link"><img src="appane logo.jpg" alt="Logo Appane" style="height: 70px; width: auto;"></a></header>
     <main class="content-area" style="display:flex; justify-content:center; align-items:center;">
@@ -73,15 +116,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div style="text-align: center; margin-top: 20px;"><a href="index.php" class="btn btn-purple">Torna alla Home</a></div>
             <?php else: ?>
                 <p style="text-align: center; margin-bottom: 20px;">Bentornato, <strong><?php echo htmlspecialchars($username); ?></strong>! Dove spediamo il tuo pane?</p>
+                
                 <form method="POST">
-                    <div class="form-row">
-                        <div class="form-col" style="flex: 2;"><label class="form-label">Via / Piazza</label><input type="text" name="via" class="form-control" required></div>
-                        <div class="form-col"><label class="form-label">N. Civico</label><input type="text" name="civico" class="form-control" required></div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <?php if (!empty($indirizzi)): ?>
+                            <h3 style="color:#5E3A8C; margin-bottom:10px; font-size: 1.1rem;">Scegli un indirizzo salvato:</h3>
+                            <?php foreach ($indirizzi as $index => $ind): ?>
+                                <label style="display: block; padding: 10px; border: 1px solid #D4A373; border-radius: 5px; margin-bottom: 10px; background: #FFFAF4; cursor: pointer;">
+                                    <input type="radio" name="id_indirizzo_scelto" value="<?php echo $ind['id_indirizzo']; ?>" onclick="gestisciFormIndirizzo()" <?php echo ($index === 0) ? 'checked' : ''; ?>>
+                                    <strong style="color: #8B4513;"><?php echo htmlspecialchars($ind['via'] . ', ' . $ind['n_civico']); ?></strong>
+                                    - <?php echo htmlspecialchars($ind['cap'] . ' ' . $ind['citta']); ?>
+                                </label>
+                            <?php endforeach; ?>
+                            
+                            <label style="display: block; padding: 10px; border: 1px solid #D4A373; border-radius: 5px; margin-bottom: 10px; background: #eee; cursor: pointer;">
+                                <input type="radio" name="id_indirizzo_scelto" value="nuovo" onclick="gestisciFormIndirizzo()">
+                                <strong>Oppure inserisci un nuovo indirizzo...</strong>
+                            </label>
+                        <?php else: ?>
+                            <input type="radio" name="id_indirizzo_scelto" value="nuovo" checked style="display:none;">
+                            <h3 style="color:#5E3A8C; margin-bottom:10px; font-size: 1.1rem;">Inserisci i dati di spedizione:</h3>
+                        <?php endif; ?>
                     </div>
-                    <div class="form-row">
-                        <div class="form-col"><label class="form-label">Città</label><input type="text" name="citta" class="form-control" required></div>
-                        <div class="form-col"><label class="form-label">CAP</label><input type="text" name="cap" class="form-control" required></div>
+
+                    <div id="form_nuovo_indirizzo" style="<?php echo !empty($indirizzi) ? 'display: none;' : 'display: block;'; ?>">
+                        <div class="form-row">
+                            <div class="form-col" style="flex: 2;"><label class="form-label">Via / Piazza</label><input type="text" name="via" class="form-control"></div>
+                            <div class="form-col"><label class="form-label">N. Civico</label><input type="text" name="civico" class="form-control"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-col"><label class="form-label">Città</label><input type="text" name="citta" class="form-control"></div>
+                            <div class="form-col"><label class="form-label">CAP</label><input type="text" name="cap" class="form-control"></div>
+                        </div>
                     </div>
+
                     <button type="submit" class="btn btn-bread" style="width: 100%; margin-top: 20px; font-size: 1.2rem;">Conferma Ordine Definitivo</button>
                 </form>
             <?php endif; ?>
