@@ -75,7 +75,11 @@ foreach ($carrello as $item) {
                 </h2>
                 
                 <div style="display: flex; justify-content: flex-end; margin-top: 30px;">
-                    <a href="scelta.php" class="btn btn-purple" style="font-size: 1.1rem;">Procedi con l'ordine ➔</a>
+                    <?php if ($ordinazioni_aperte): ?>
+                        <a href="scelta.php" class="btn btn-purple" style="font-size: 1.1rem;">Procedi con l'ordine ➔</a>
+                    <?php else: ?>
+                        <span style="color: #991B1B; font-weight: bold;">Le ordinazioni sono chiuse. Impossibile procedere.</span>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
         </div>

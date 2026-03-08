@@ -41,11 +41,17 @@ $immagine = $stmt_img->fetchColumn();
                 <strong>Ingredienti:</strong> <?php echo empty($ingredienti) ? 'Non specificati' : htmlspecialchars(implode(', ', $ingredienti)); ?>
             </div>
             
-            <form method="POST" action="index.php" style="margin-top: 30px;">
-                <input type="hidden" name="nome_prodotto" value="<?php echo htmlspecialchars($prodotto['nome']); ?>">
-                <input type="hidden" name="prezzo" value="<?php echo htmlspecialchars($prodotto['prezzo']); ?>">
-                <button type="submit" name="aggiungi" class="btn btn-purple" style="font-size: 1.2rem;">Aggiungi al Carrello 🛒</button>
-            </form>
+            <?php if ($ordinazioni_aperte): ?>
+                <form method="POST" action="index.php" style="margin-top: 30px;">
+                    <input type="hidden" name="nome_prodotto" value="<?php echo htmlspecialchars($prodotto['nome']); ?>">
+                    <input type="hidden" name="prezzo" value="<?php echo htmlspecialchars($prodotto['prezzo']); ?>">
+                    <button type="submit" name="aggiungi" class="btn btn-purple" style="font-size: 1.2rem;">Aggiungi al Carrello 🛒</button>
+                </form>
+            <?php else: ?>
+                <div style="margin-top: 30px; padding: 15px; background: #FEE2E2; color: #991B1B; border-radius: 8px; font-weight: bold;">
+                    Le ordinazioni sono attualmente chiuse. Riapriranno il <?php echo htmlspecialchars($menu_giorno_inizio); ?>.
+                </div>
+            <?php endif; ?>
         </div>
     </main>
 </div>
